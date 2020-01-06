@@ -4,6 +4,7 @@ val kotlin_version: String by extra
 val ktor_version: String by extra
 val coroutines_version: String by extra
 val serialization_version: String by extra
+val kodein_version: String by extra
 
 plugins {
     id("com.android.library")
@@ -17,6 +18,15 @@ android {
     defaultConfig {
         minSdkVersion(16)
         targetSdkVersion(29)
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+        kotlinOptions {
+            jvmTarget = "1.8"
+        }
     }
 }
 
@@ -44,6 +54,8 @@ kotlin {
         implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:$serialization_version")
         implementation("io.ktor:ktor-client-core:$ktor_version")
         implementation("io.ktor:ktor-client-serialization:$ktor_version")
+        implementation("org.kodein.di:kodein-di-core:$kodein_version")
+        implementation("org.kodein.di:kodein-di-erased:$kodein_version")
     }
 
     sourceSets["androidMain"].dependencies {

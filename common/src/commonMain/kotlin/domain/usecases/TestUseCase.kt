@@ -3,11 +3,13 @@ package domain.usecases
 import domain.entities.ErrorEntity
 import com.kmp.common.Result
 import domain.entities.TestEntity
-import data.repositories.TestDataRepository
+import di.testKodein
+import domain.repositories.TestRepository
+import org.kodein.di.erased.instance
 
-class TestUseCase(
-    private val testRepository: TestDataRepository
-) : UseCase<List<TestEntity>, TestUseCase.Parameters>() {
+class TestUseCase : UseCase<List<TestEntity>, TestUseCase.Parameters>() {
+
+    private val testRepository: TestRepository by testKodein.instance()
 
     override suspend fun execute(parameters: Parameters): Result<List<TestEntity>> =
         runCatching {

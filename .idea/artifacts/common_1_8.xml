@@ -1,0 +1,6 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="common-1.8">
+    <output-path>$PROJECT_DIR$/common/build/libs</output-path>
+    <root id="archive" name="common-1.8.jar" />
+  </artifact>
+</component>
