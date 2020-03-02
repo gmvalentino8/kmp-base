@@ -1,9 +1,12 @@
 package domain.usecases
 
-import com.kmp.common.Result
-import com.kmp.common.utils.BackgroundDispatcher
-import com.kmp.common.utils.MainDispatcher
+import domain.entities.ErrorEntity
+import utils.Result
+import utils.BackgroundDispatcher
+import utils.MainDispatcher
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 import kotlin.coroutines.CoroutineContext
 
 abstract class UseCase<out Type, in Parameters> : CoroutineScope where Type : Any, Parameters : UseCase.Parameters {
@@ -13,12 +16,17 @@ abstract class UseCase<out Type, in Parameters> : CoroutineScope where Type : An
     override val coroutineContext: CoroutineContext
         get() = MainDispatcher + job
 
-    abstract suspend fun execute(parameters: Parameters): Result<Type>
+    abstract suspend fun execute(parameters: Parameters): Flow<Result<Type>>
 
-    operator fun invoke(parameters: Parameters, completion: (Result<Type>) -> Unit) {
+    fun execute(parameters: Parameters, onSuccess: (Type) -> Unit, onError: (ErrorEntity) -> Unit) {
         launch {
             withContext(BackgroundDispatcher) {
-                completion(execute(parameters))
+                execute(parameters).collect {
+                    when (it) {
+                        is Result.Success -> onSuccess(it.data)
+                        is Result.Error -> onError(it.error)
+                    }
+                }
             }
         }
     }

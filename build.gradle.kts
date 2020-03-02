@@ -2,6 +2,7 @@ buildscript {
     val kotlin_version: String by extra
     val gradle_android_version: String by extra
     val shadow_version: String by extra
+    val sqldelight_version: String by extra
 
     repositories {
         maven("https://kotlin.bintray.com/kotlinx")
@@ -16,8 +17,10 @@ buildscript {
         classpath("com.android.tools.build:gradle:$gradle_android_version")
         classpath("com.github.jengelman.gradle.plugins:shadow:$shadow_version")
         classpath("org.jetbrains.kotlin:kotlin-serialization:$kotlin_version")
+        classpath("com.squareup.sqldelight:gradle-plugin:$sqldelight_version")
     }
 }
+
 
 allprojects {
     repositories {

@@ -5,12 +5,18 @@ val ktor_version: String by extra
 val coroutines_version: String by extra
 val serialization_version: String by extra
 val kodein_version: String by extra
+val klock_version: String by extra
+val sqldelight_version: String by extra
 
 plugins {
     id("com.android.library")
     kotlin("multiplatform")
     id("kotlinx-serialization")
+    id("com.squareup.sqldelight")
+    id("org.jetbrains.kotlin.native.cocoapods")
 }
+
+version = "0.0.1"
 
 android {
     compileSdkVersion(29)
@@ -31,21 +37,8 @@ android {
 }
 
 kotlin {
-    //select iOS target platform depending on the Xcode environment variables
-    val iOSTarget: (String, KotlinNativeTarget.() -> Unit) -> KotlinNativeTarget =
-        if (System.getenv("SDK_NAME")?.startsWith("iphoneos") == true)
-            ::iosArm64
-        else
-            ::iosX64
 
-    iOSTarget("ios") {
-        binaries {
-            framework {
-                baseName = "common"
-            }
-        }
-    }
-
+    ios()
     android()
 
     sourceSets["commonMain"].dependencies {
@@ -56,6 +49,7 @@ kotlin {
         implementation("io.ktor:ktor-client-serialization:$ktor_version")
         implementation("org.kodein.di:kodein-di-core:$kodein_version")
         implementation("org.kodein.di:kodein-di-erased:$kodein_version")
+        implementation("com.soywiz.korlibs.klock:klock:$klock_version")
     }
 
     sourceSets["androidMain"].dependencies {
@@ -65,6 +59,7 @@ kotlin {
         implementation("io.ktor:ktor-client-json-jvm:$ktor_version")
         implementation("io.ktor:ktor-client-serialization-jvm:$ktor_version")
         implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:$serialization_version")
+        implementation("com.squareup.sqldelight:android-driver:$sqldelight_version")
     }
 
     sourceSets["iosMain"].dependencies {
@@ -72,29 +67,19 @@ kotlin {
         implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-native:$serialization_version")
         implementation("io.ktor:ktor-client-ios:$ktor_version")
         implementation("io.ktor:ktor-client-serialization-native:$ktor_version")
+        implementation("com.squareup.sqldelight:ios-driver:$sqldelight_version")
+    }
+
+    cocoapods {
+        // Configure fields required by CocoaPods.
+        summary = "Common Code"
+        homepage = "https://github.com/gmvalentino8/kmp-common-base"
     }
 }
 
-
-val packForXcode by tasks.creating(Sync::class) {
-    group = "build"
-
-    //selecting the right configuration for the iOS framework depending on the Xcode environment variables
-    val mode = System.getenv("CONFIGURATION") ?: "DEBUG"
-    val framework = kotlin.targets.getByName<KotlinNativeTarget>("ios").binaries.getFramework(mode)
-
-    inputs.property("mode", mode)
-    dependsOn(framework.linkTask)
-
-    val targetDir = File(buildDir, "xcode-frameworks")
-    from({ framework.outputDirectory })
-    into(targetDir)
-
-    doLast {
-        val gradlew = File(targetDir, "gradlew")
-        gradlew.writeText("#!/bin/bash\nexport 'JAVA_HOME=${System.getProperty("java.home")}'\ncd '${rootProject.rootDir}'\n./gradlew \$@\n")
-        gradlew.setExecutable(true)
+sqldelight {
+    database("TestDatabase") {
+        packageName = "com.kmp"
+        schemaOutputDirectory = file("build/dbs")
     }
 }
-
-tasks.getByName("build").dependsOn(packForXcode)

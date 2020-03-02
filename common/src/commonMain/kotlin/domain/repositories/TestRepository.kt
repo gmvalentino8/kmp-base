@@ -4,5 +4,6 @@ import domain.entities.TestEntity
 
 interface TestRepository {
 
-    suspend fun getUsers(): List<TestEntity>
+    suspend fun getUsers(update: Boolean): List<TestEntity>
+
 }

@@ -1,4 +1,4 @@
-package com.kmp.common.utils
+package utils
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers

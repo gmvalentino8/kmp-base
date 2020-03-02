@@ -16,8 +16,3 @@ pluginManagement {
 enableFeaturePreview("GRADLE_METADATA")
 
 include("common")
-include("android")
-
-if (INCLUDE_ANDROID == "true") {
-    include("android")
-}

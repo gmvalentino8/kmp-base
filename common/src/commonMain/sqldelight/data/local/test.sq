@@ -1,0 +1,22 @@
+import domain.entities.TestEntity.Gender;
+
+CREATE TABLE TestDb (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    last_name TEXT NOT NULL,
+    user_name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    gender TEXT AS Gender NOT NULL,
+    picture_url TEXT NOT NULL
+);
+
+insertEntity:
+INSERT INTO TestDb(id, name, last_name, user_name, email, gender, picture_url)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+insertModel:
+INSERT INTO TestDb VALUES ?;
+
+selectAll:
+SELECT *
+FROM TestDb;

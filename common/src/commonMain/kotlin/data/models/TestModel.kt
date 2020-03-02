@@ -12,12 +12,18 @@ data class TestResponseModel(
 data class TestModel(
     @SerialName("cell") val cell: String,
     @SerialName("email") val email: String,
-    @SerialName("gender") val gender: String,
+    @SerialName("gender") val gender: Gender,
     @SerialName("name") val name: Name,
     @SerialName("phone") val phone: String,
     @SerialName("picture") val picture: Picture,
     @SerialName("login") val login: Login
 )
+
+@Serializable
+enum class Gender {
+    @SerialName("male") MALE,
+    @SerialName("female") FEMALE
+}
 
 @Serializable
 data class Picture(
